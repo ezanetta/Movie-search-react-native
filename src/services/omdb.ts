@@ -1,6 +1,6 @@
 import { Movie, MovieSummary } from '@/domain/movie';
 
-const API_KEY = 'ef1b300a';
+const API_KEY = process.env.EXPO_PUBLIC_OMDB_API_KEY ?? '';
 const BASE_URL = 'https://www.omdbapi.com';
 
 interface SearchResponse {

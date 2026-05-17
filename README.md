@@ -19,8 +19,15 @@ A cross-platform (iOS / Android) movie search app built with Expo and the [OMDB 
 **Prerequisites:** Node 18+, Xcode (iOS) or Android Studio (Android).
 
 ```bash
+# 1. Install dependencies
 npm install
-npx expo start        # start the dev server
+
+# 2. Set up environment variables
+cp .env.example .env
+# Edit .env and add your OMDB API key (free at http://www.omdbapi.com/apikey.aspx)
+
+# 3. Start the dev server
+npx expo start
 
 npx expo start --ios      # open directly in iOS simulator
 npx expo start --android  # open directly in Android emulator
@@ -181,7 +188,7 @@ The app uses the [OMDB API](http://www.omdbapi.com/).
 | `?s={query}&apikey=` | Search — returns `MovieSummary[]` |
 | `?i={imdbID}&apikey=&plot=full` | Detail — returns full `Movie` |
 
-Both calls are encapsulated in `src/services/omdb.ts`. The API key is stored as a constant in that file — for a production app it should be moved to an environment variable via `expo-constants`.
+Both calls are encapsulated in `src/services/omdb.ts`. The API key is read from `process.env.EXPO_PUBLIC_OMDB_API_KEY`, which Expo inlines from your local `.env` file at build time. The `.env` file is gitignored — see `.env.example` for the required variable.
 
 ---
 
