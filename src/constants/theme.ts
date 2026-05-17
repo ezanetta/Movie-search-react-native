@@ -61,3 +61,15 @@ export const ScreenPaddingH = 20;
 export const ScreenPaddingTop = 70;
 export const ScreenPaddingBottom = 110;
 export const TAB_BAR_HEIGHT = 60;
+
+// ─── Font names ───────────────────────────────────────────────────────────────
+
+export const Fonts = {
+  displayBold: 'BricolageGrotesque_700Bold',
+  displayExtraBold: 'BricolageGrotesque_800ExtraBold',
+  bodyRegular: 'Geist_400Regular',
+  bodyMedium: 'Geist_500Medium',
+  bodySemiBold: 'Geist_600SemiBold',
+  bodyBold: 'Geist_700Bold',
+  accentItalic: 'InstrumentSerif_400Regular_Italic',
+} as const;
