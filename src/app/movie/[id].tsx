@@ -1,13 +1,14 @@
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
-import React, { useEffect } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
+import React, { useCallback, useEffect } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { Movie } from '@/domain/movie';
+import { useFavorites } from '@/hooks/use-favorites';
 import { useMovieDetails } from '@/hooks/use-movie-details';
 import { useTheme } from '@/hooks/use-theme';
 
@@ -42,12 +43,34 @@ function RatingBadge({ movie }: { movie: Movie }) {
 export default function MovieDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { movie, loading, error } = useMovieDetails(id);
+  const { isFavorite, toggle } = useFavorites();
   const navigation = useNavigation();
   const theme = useTheme();
 
+  const favourite = movie ? isFavorite(movie.imdbID) : false;
+
+  const handleToggle = useCallback(() => {
+    if (!movie) return;
+    toggle({
+      imdbID: movie.imdbID,
+      Title: movie.Title,
+      Year: movie.Year,
+      Poster: movie.Poster,
+      Type: movie.Type,
+    });
+  }, [movie, toggle]);
+
   useEffect(() => {
-    if (movie) navigation.setOptions({ title: movie.Title });
-  }, [movie, navigation]);
+    if (!movie) return;
+    navigation.setOptions({
+      title: movie.Title,
+      headerRight: () => (
+        <Pressable onPress={handleToggle} hitSlop={8} style={styles.headerFavButton}>
+          <ThemedText style={styles.headerFavIcon}>{favourite ? '★' : '☆'}</ThemedText>
+        </Pressable>
+      ),
+    });
+  }, [movie, navigation, favourite, handleToggle]);
 
   if (loading) {
     return (
@@ -153,5 +176,12 @@ const styles = StyleSheet.create({
   },
   infoValue: {
     flex: 1,
+  },
+  headerFavButton: {
+    paddingHorizontal: Spacing.two,
+  },
+  headerFavIcon: {
+    fontSize: 24,
+    color: '#FFD700',
   },
 });
