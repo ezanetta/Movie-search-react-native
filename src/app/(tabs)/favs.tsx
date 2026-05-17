@@ -1,16 +1,28 @@
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback } from 'react';
-import { StyleSheet } from 'react-native';
+import { FlatList, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { MovieGrid } from '@/components/MovieGrid';
+import { FavCard } from '@/components/FavCard';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { BottomTabInset, Spacing } from '@/constants/theme';
+import {
+  cardShadow,
+  darkTheme,
+  Fonts,
+  lightTheme,
+  ScreenPaddingBottom,
+  ScreenPaddingH,
+  ScreenPaddingTop,
+} from '@/constants/theme';
+import { useAccent, useTheme } from '@/context/ThemeContext';
+import { FavMovie } from '@/domain/movie';
 import { useFavorites } from '@/hooks/use-favorites';
 
 export default function FavsScreen() {
-  const { favorites, isFavorite, toggle, refresh } = useFavorites();
+  const { favorites, toggle, refresh } = useFavorites();
+  const { dark } = useTheme();
+  const accent = useAccent();
+  const theme = dark ? darkTheme : lightTheme;
 
   useFocusEffect(
     useCallback(() => {
@@ -18,37 +30,108 @@ export default function FavsScreen() {
     }, [refresh])
   );
 
+  const isEmpty = favorites.length === 0;
+
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-        <ThemedText type="title" style={styles.heading}>
-          Favorites
-        </ThemedText>
-        <MovieGrid
-          movies={favorites}
-          loading={false}
-          error={null}
-          isFavorite={isFavorite}
-          onToggleFavorite={toggle}
-          emptyMessage="No favorites yet. Tap ☆ on any movie."
-        />
+    <View style={[styles.root, { backgroundColor: theme.paper }]}>
+      <SafeAreaView style={styles.safe} edges={['top']}>
+        <View style={styles.header}>
+          <ThemedText type="display">Favourites</ThemedText>
+          <ThemedText type="small" color={theme.muted}>
+            Your personal watchlist.
+          </ThemedText>
+        </View>
+
+        {isEmpty ? (
+          <ScrollView
+            style={styles.emptyScroll}
+            contentContainerStyle={styles.emptyContent}
+            showsVerticalScrollIndicator={false}>
+            <View style={[styles.emptyCard, { backgroundColor: theme.card, borderColor: theme.line }, !dark && cardShadow]}>
+              <View style={[styles.orbTopRight, { backgroundColor: accent + '22' }]} />
+              <View style={[styles.orbBottomLeft, { backgroundColor: accent + '22' }]} />
+
+              <View style={[styles.iconChip, { backgroundColor: accent + '22' }]}>
+                <ThemedText style={{ color: accent, fontSize: 28 }}>♥</ThemedText>
+              </View>
+
+              <ThemedText
+                type="subtitle"
+                style={{ fontFamily: Fonts.displayBold, textAlign: 'center' }}>
+                Nothing saved yet
+              </ThemedText>
+              <ThemedText type="small" color={theme.muted} style={styles.emptyBody}>
+                Tap ★ on any movie to add it here.{'\n'}
+                Your watchlist lives across sessions.
+              </ThemedText>
+            </View>
+          </ScrollView>
+        ) : (
+          <FlatList
+            data={favorites}
+            keyExtractor={item => item.imdbID}
+            contentContainerStyle={styles.list}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item, index }) => (
+              <FavCard
+                movie={item}
+                index={index}
+                onToggleFavorite={(m: FavMovie) => toggle(m)}
+              />
+            )}
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
+          />
+        )}
       </SafeAreaView>
-    </ThemedView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  root: { flex: 1 },
+  safe: {
     flex: 1,
+    paddingHorizontal: ScreenPaddingH,
+    paddingTop: ScreenPaddingTop,
+    paddingBottom: ScreenPaddingBottom,
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.three,
-    paddingTop: Spacing.three,
-    paddingBottom: BottomTabInset,
-    gap: Spacing.three,
+  header: { gap: 4, marginBottom: 20 },
+  emptyScroll: { flex: 1 },
+  emptyContent: { paddingTop: 24, paddingBottom: 24 },
+  emptyCard: {
+    borderRadius: 22,
+    borderWidth: 1.5,
+    borderStyle: 'dashed',
+    padding: 32,
+    alignItems: 'center',
+    gap: 14,
+    overflow: 'hidden',
   },
-  heading: {
-    paddingHorizontal: Spacing.one,
+  orbTopRight: {
+    position: 'absolute',
+    top: -30,
+    right: -30,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
   },
+  orbBottomLeft: {
+    position: 'absolute',
+    bottom: -30,
+    left: -30,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+  },
+  iconChip: {
+    width: 72,
+    height: 72,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    transform: [{ rotate: '-8deg' }],
+  },
+  emptyBody: { textAlign: 'center', lineHeight: 22 },
+  list: { paddingTop: 16, paddingBottom: 24, gap: 24 },
+  separator: { height: 0 },
 });
