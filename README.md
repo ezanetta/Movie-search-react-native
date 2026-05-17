@@ -9,9 +9,6 @@ A cross-platform (iOS / Android) movie search app built with Expo and the [OMDB 
 
 
 
-
-
-
 ## Screenshots
 
 | Home - Empty state | Home results | Favs |
@@ -30,7 +27,8 @@ A cross-platform (iOS / Android) movie search app built with Expo and the [OMDB 
 - Poster grid with favourite toggle (★ / ☆) on every card
 - Full movie detail screen — rating, plot, cast, director, awards, box office
 - Favourites tab — persisted to device storage, stays in sync across tabs
-- Light / dark mode — follows system preference automatically
+- Settings screen — dark mode toggle and accent colour picker, persisted to device storage
+- Light / dark mode — override system preference or let the app follow it automatically
 
 ---
 
@@ -70,7 +68,7 @@ npm run test:coverage # with coverage report
 | Framework | Expo 55 (SDK) + Expo Router 55 (file-based routing) |
 | Language | TypeScript 5.9 (strict mode) |
 | React / RN | React 19, React Native 0.83 |
-| Navigation | Expo Router Stack + NativeTabs (native system tab bar) |
+| Navigation | Expo Router Stack + custom `FloatingTabBar` (pill overlay with blur) |
 | Persistence | `@react-native-async-storage/async-storage` |
 | Images | `expo-image` (fast, cached) |
 | Animations | `react-native-reanimated` 4 (splash overlay) |
@@ -91,14 +89,22 @@ screens  →  hooks  →  services / storage  →  domain
 ```
 src/
 ├── app/                        # Expo Router screens (file-based routes)
-│   ├── _layout.tsx             # Root Stack navigator (ThemeProvider + splash)
+│   ├── _layout.tsx             # Root Stack navigator (ThemeProvider + fonts + splash)
+│   ├── settings.tsx            # Settings screen (Stack push from Favs)
 │   ├── (tabs)/
-│   │   ├── _layout.tsx         # NativeTabs — Home + Favourites triggers
+│   │   ├── _layout.tsx         # FloatingTabBar — Home + Favs tabs
 │   │   ├── _layout.web.tsx     # Web tab bar variant
 │   │   ├── index.tsx           # Home screen (search)
-│   │   └── favs.tsx            # Favourites screen
+│   │   ├── favs.tsx            # Favourites screen
+│   │   └── settings.tsx        # Settings tab route (href: null — hidden from bar)
 │   └── movie/
 │       └── [id].tsx            # Movie detail screen (Stack push)
+│
+├── constants/
+│   └── theme.ts                # Design tokens: colours, fonts, spacing, accent palette
+│
+├── context/
+│   └── ThemeContext.tsx        # React context — distributes ThemeSettings to the tree
 │
 ├── domain/
 │   └── movie.ts                # MovieSummary + Movie interfaces (pure TS, no RN)
@@ -107,19 +113,32 @@ src/
 │   └── omdb.ts                 # OMDB HTTP calls → domain types
 │
 ├── storage/
-│   └── favorites.ts            # AsyncStorage read / write → domain types
+│   ├── favorites.ts            # AsyncStorage read / write for favourites → domain types
+│   └── settings.ts             # AsyncStorage read / write for dark mode + accent
 │
 ├── hooks/
+│   ├── use-color-scheme.ts     # System colour scheme (native)
+│   ├── use-color-scheme.web.ts # System colour scheme (web)
 │   ├── use-movie-search.ts     # Debounced search → { movies, loading, error }
 │   ├── use-movie-details.ts    # Fetch by imdbID → { movie, loading, error }
-│   └── use-favorites.ts        # Favourites state + persistence → { favorites, isFavorite, toggle, refresh }
+│   ├── use-favorites.ts        # Favourites state + persistence → { favorites, isFavorite, toggle, refresh }
+│   ├── use-theme-settings.ts   # Loads/saves dark + accent → { dark, accent, setDark, setAccent, loaded }
+│   └── use-theme.ts            # Resolves active theme object from context
 │
 └── components/
-    ├── SearchInput.tsx          # Controlled text input (themed)
+    ├── AccentSwatch.tsx         # Tappable colour swatch for the accent picker
+    ├── animated-icon.tsx        # Animated tab icon (native)
+    ├── animated-icon.web.tsx    # Animated tab icon (web)
+    ├── FavCard.tsx              # Row card for the Favourites list
+    ├── FloatingTabBar.tsx       # Custom floating pill tab bar (blur + dot badge)
     ├── MovieCard.tsx            # Poster + title + ★ toggle, navigates to detail
     ├── MovieGrid.tsx            # FlatList numColumns=2, loading/error/empty states
+    ├── PosterCard.tsx           # Reusable poster image card
+    ├── SearchInput.tsx          # Controlled text input (themed)
+    ├── StarButton.tsx           # Animated ★/☆ toggle button
     ├── themed-text.tsx          # Text with theme colours and type scale
-    └── themed-view.tsx          # View with themed background colour
+    ├── themed-view.tsx          # View with themed background colour
+    └── Toggle.tsx               # iOS-style toggle switch
 ```
 
 ### Layer rules
@@ -128,26 +147,33 @@ src/
 |---|---|---|
 | `domain/` | Nothing | Everything |
 | `services/` | `domain/` | RN, storage, hooks, components |
-| `storage/` | `domain/` | services, hooks, components |
-| `hooks/` | `services/`, `storage/`, `domain/` | components, navigation |
-| `components/` | `domain/` types, hooks | services, storage directly |
-| `app/` screens | hooks, components | services, storage directly |
+| `storage/` | `domain/`, `constants/` | services, hooks, components |
+| `constants/` | Nothing | Everything |
+| `hooks/` | `services/`, `storage/`, `domain/`, `constants/` | components, navigation |
+| `context/` | `hooks/`, `constants/` | components, navigation |
+| `components/` | `domain/` types, `hooks/`, `context/` | services, storage directly |
+| `app/` screens | hooks, components, context | services, storage directly |
 
 ### Navigation structure
 
 ```
 Stack (root _layout.tsx)
-├── (tabs)              ← NativeTabs, headerShown: false
+├── (tabs)              ← FloatingTabBar, headerShown: false
 │   ├── index           ← Home / Search
-│   └── favs            ← Favourites
-└── movie/[id]          ← Detail screen, headerShown: true
+│   └── favs            ← Favourites (gear icon → /settings)
+├── settings            ← Settings screen (Stack push, no tab bar)
+└── movie/[id]          ← Detail screen (Stack push, no tab bar)
 ```
 
-The movie detail sits in the root Stack rather than inside the tab group, so it pushes full-screen without the tab bar.
+The Settings and movie detail screens sit in the root Stack rather than inside the tab group, so they push full-screen without the tab bar. Settings is reached via the gear icon on the Favs screen header.
 
 ### Favourites sync
 
 Both tabs use independent `useFavorites()` instances backed by AsyncStorage. The Favourites tab calls `refresh()` inside `useFocusEffect` so it reloads from storage whenever it gains focus — no shared state manager needed.
+
+### Theme system
+
+`useThemeSettings` loads `dark` and `accent` from AsyncStorage on mount and exposes `setDark` / `setAccent` mutators that write-through immediately. The root `_layout.tsx` passes the result into `ThemeProvider`, making both values available anywhere via `useTheme()` / `useAccent()`. This means theme changes are instant and persist across cold starts.
 
 ---
 
@@ -171,21 +197,26 @@ Tests live in `__tests__/` mirroring the `src/` structure.
 
 ```
 __tests__/
-├── services/omdb.test.ts           # 9 tests
-├── storage/favorites.test.ts       # 8 tests
+├── services/omdb.test.ts               # 9 tests
+├── storage/
+│   ├── favorites.test.ts               # 7 tests
+│   └── settings.test.ts               # 5 tests
 └── hooks/
-    ├── use-movie-search.test.ts    # 12 tests
-    ├── use-movie-details.test.ts   # 8 tests
-    └── use-favorites.test.ts       # 8 tests
+    ├── use-movie-search.test.ts        # 11 tests
+    ├── use-movie-details.test.ts       # 6 tests
+    ├── use-favorites.test.ts           # 12 tests
+    └── use-theme-settings.test.ts     # 8 tests
 ```
 
-**45 tests total.** Coverage on the testable layers (services, storage, hooks):
+**58 tests total.** Coverage on the testable layers (services, storage, hooks):
 
 | File | Statements | Branches | Functions |
 |---|---|---|---|
 | `services/omdb.ts` | 100% | 100% | 100% |
 | `storage/favorites.ts` | 100% | 100% | 100% |
+| `storage/settings.ts` | 100% | 100% | 100% |
 | `hooks/use-favorites.ts` | 100% | 100% | 100% |
+| `hooks/use-theme-settings.ts` | 100% | 100% | 100% |
 | `hooks/use-movie-details.ts` | 100% | 50%* | 100% |
 | `hooks/use-movie-search.ts` | 100% | 83%* | 100% |
 
