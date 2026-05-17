@@ -4,6 +4,17 @@ A cross-platform (iOS / Android) movie search app built with Expo and the [OMDB 
 
 ---
 
+## Screenshots
+
+| | | |
+|:---:|:---:|:---:|
+| ![](docs/screenshots/01.png) | ![](docs/screenshots/02.png) | ![](docs/screenshots/03.png) |
+| | | |
+| ![](docs/screenshots/04.png) | ![](docs/screenshots/05.png) | ![](docs/screenshots/06.png) |
+| | | |
+
+---
+
 ## Features
 
 - Debounced live search — results update as you type (400 ms debounce)
