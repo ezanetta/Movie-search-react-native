@@ -46,7 +46,7 @@ function RootLayoutInner() {
     <ThemeProvider value={themeSettings}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="movie/[id]" options={{ headerShown: true }} />
+        <Stack.Screen name="movie/[id]" options={{ headerShown: false }} />
       </Stack>
     </ThemeProvider>
   );
