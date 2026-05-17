@@ -1,17 +1,17 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { MovieSummary } from '@/domain/movie';
+import { FavMovie } from '@/domain/movie';
 import { getFavorites, saveFavorites } from '@/storage/favorites';
 
 interface UseFavoritesResult {
-  favorites: MovieSummary[];
+  favorites: FavMovie[];
   isFavorite: (imdbID: string) => boolean;
-  toggle: (movie: MovieSummary) => Promise<void>;
+  toggle: (movie: FavMovie) => Promise<void>;
   refresh: () => Promise<void>;
 }
 
 export function useFavorites(): UseFavoritesResult {
-  const [favorites, setFavorites] = useState<MovieSummary[]>([]);
+  const [favorites, setFavorites] = useState<FavMovie[]>([]);
 
   const refresh = useCallback(async () => {
     const data = await getFavorites();
@@ -28,7 +28,7 @@ export function useFavorites(): UseFavoritesResult {
   );
 
   const toggle = useCallback(
-    async (movie: MovieSummary) => {
+    async (movie: FavMovie) => {
       const updated = favorites.some(m => m.imdbID === movie.imdbID)
         ? favorites.filter(m => m.imdbID !== movie.imdbID)
         : [...favorites, movie];

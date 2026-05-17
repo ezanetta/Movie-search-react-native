@@ -6,6 +6,16 @@ export interface MovieSummary {
   Type: string;
 }
 
+// Richer type stored in favourites — populated from the detail endpoint.
+// Fields beyond MovieSummary are optional so cards added from the grid
+// can omit them gracefully.
+export interface FavMovie extends MovieSummary {
+  Runtime?: string;
+  Rated?: string;
+  Genre?: string;
+  imdbRating?: string;
+}
+
 export interface Movie {
   imdbID: string;
   Title: string;

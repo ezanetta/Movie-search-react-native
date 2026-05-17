@@ -1,55 +1,41 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
-
 import '@/global.css';
 
-import { Platform } from 'react-native';
+// ─── Color themes ────────────────────────────────────────────────────────────
 
-export const Colors = {
-  light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
-  },
-  dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
-  },
+export const lightTheme = {
+  paper: '#f4efe6',
+  ink: '#181613',
+  muted: '#7a7468',
+  line: 'rgba(24,22,19,0.10)',
+  card: '#ffffff',
 } as const;
 
-export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
+export const darkTheme = {
+  paper: '#0e0d0c',
+  ink: '#f4efe6',
+  muted: '#8a8580',
+  line: 'rgba(255,255,255,0.10)',
+  card: '#1c1c1c',
+} as const;
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: 'var(--font-display)',
-    serif: 'var(--font-serif)',
-    rounded: 'var(--font-rounded)',
-    mono: 'var(--font-mono)',
-  },
-});
+export type Theme = typeof lightTheme;
+
+// ─── Accent palette ───────────────────────────────────────────────────────────
+
+export const ACCENT_PALETTE = [
+  { id: '#ff5722', name: 'Tomato' },
+  { id: '#ffd60a', name: 'Sunshine' },
+  { id: '#9b7eff', name: 'Lilac' },
+  { id: '#22c55e', name: 'Mint' },
+  { id: '#0ea5e9', name: 'Cobalt' },
+] as const;
+
+export type AccentColor = (typeof ACCENT_PALETTE)[number]['id'];
+
+export const DEFAULT_ACCENT: AccentColor = '#ff5722';
+export const DEFAULT_DARK = false;
+
+// ─── Spacing ──────────────────────────────────────────────────────────────────
 
 export const Spacing = {
   half: 2,
@@ -61,5 +47,19 @@ export const Spacing = {
   six: 64,
 } as const;
 
-export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
-export const MaxContentWidth = 800;
+// ─── Card shadow (light mode only) ───────────────────────────────────────────
+
+export const cardShadow = {
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 8 },
+  shadowOpacity: 0.06,
+  shadowRadius: 24,
+  elevation: 4,
+} as const;
+
+// ─── Screen layout constants ──────────────────────────────────────────────────
+
+export const ScreenPaddingH = 20;
+export const ScreenPaddingTop = 70;
+export const ScreenPaddingBottom = 110;
+export const TAB_BAR_HEIGHT = 60;
