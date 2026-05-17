@@ -4,13 +4,15 @@ A cross-platform (iOS / Android) movie search app built with Expo and the [OMDB 
 
 ---
 
+
+
 ## Screenshots
 
-| | | |
+| Home - Empty state | Home results | Favs |
 |:---:|:---:|:---:|
-| ![](docs/screenshots/01.png) | ![](docs/screenshots/02.png) | ![](docs/screenshots/03.png) |
-| | | |
-| ![](docs/screenshots/04.png) | ![](docs/screenshots/05.png) | ![](docs/screenshots/06.png) |
+| <img width="300"  alt="Home - Light - Empty state" src="https://github.com/user-attachments/assets/07bcf1d0-ad51-4fa2-81fb-e0d9b597c8ea" /> | <img width="300"  alt="Home - Light - Movies" src="https://github.com/user-attachments/assets/df23ec39-6809-4a89-bc11-99a1efda4965" /> | <img width="300"  alt="Favs - Light" src="https://github.com/user-attachments/assets/b2a19361-0d19-4b70-8f41-0368c6890f3c" /> |
+| Home | Favs | Settings|
+| <img width="300"  alt="Home - Dark" src="https://github.com/user-attachments/assets/7fd9c0b3-b6c3-4da6-861d-7d3f02881ba9" /> | <img width="300"  alt="Favs- Dark" src="https://github.com/user-attachments/assets/ca47f264-05cd-433b-9bfd-d5d07a34d1c7" /> | <img width="300"  alt="Settings" src="https://github.com/user-attachments/assets/c01d8eff-69f8-46e5-be91-175724808f7e" /> |
 | | | |
 
 ---
