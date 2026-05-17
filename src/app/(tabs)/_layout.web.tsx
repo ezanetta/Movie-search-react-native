@@ -31,6 +31,9 @@ export default function TabsLayoutWeb() {
         <TabTrigger name="favs" href="/favs" asChild>
           <TabButton>Favorites</TabButton>
         </TabTrigger>
+        <TabTrigger name="settings" href="/settings" asChild>
+          <TabButton>Settings</TabButton>
+        </TabTrigger>
       </TabList>
     </Tabs>
   );
@@ -48,7 +51,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.three,
     borderRadius: Spacing.three,
   },
-  pressed: {
-    opacity: 0.7,
-  },
+  pressed: { opacity: 0.7 },
 });
