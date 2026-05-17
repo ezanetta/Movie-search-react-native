@@ -37,6 +37,7 @@ export default function SettingsScreen() {
       contentContainerStyle={[styles.content, { paddingBottom: ScreenPaddingBottom }]}
       showsVerticalScrollIndicator={false}>
       <SafeAreaView edges={['top']}>
+        {/* Back button */}
         <Pressable onPress={() => router.back()} style={styles.backButton} hitSlop={8}>
           <ThemedText style={{ fontFamily: Fonts.bodySemiBold, fontSize: 14 }} color={colors.muted}>
             ← Back
@@ -50,10 +51,12 @@ export default function SettingsScreen() {
           Personalise the look of your app.
         </ThemedText>
 
+        {/* ── Appearance section ── */}
         <ThemedText type="label" color={colors.muted} style={styles.sectionLabel}>
           Appearance
         </ThemedText>
 
+        {/* Dark mode card */}
         <View style={[styles.card, { backgroundColor: colors.card }, !dark && cardShadow]}>
           <View style={styles.cardRow}>
             <View style={styles.cardTextBlock}>
@@ -68,6 +71,7 @@ export default function SettingsScreen() {
           </View>
         </View>
 
+        {/* Accent color card */}
         <View style={[styles.card, { backgroundColor: colors.card }, !dark && cardShadow]}>
           <ThemedText style={{ fontFamily: Fonts.bodySemiBold, fontSize: 16 }}>
             Accent color
@@ -88,6 +92,7 @@ export default function SettingsScreen() {
           </View>
         </View>
 
+        {/* ── About section ── */}
         <ThemedText type="label" color={colors.muted} style={styles.sectionLabel}>
           About
         </ThemedText>

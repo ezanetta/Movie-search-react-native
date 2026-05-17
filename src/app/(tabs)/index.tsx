@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   FlatList,
+  Pressable,
   ScrollView,
   StyleSheet,
   TextInput,
   View,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { PosterCard } from '@/components/PosterCard';
 import { ThemedText } from '@/components/themed-text';
+import { router } from 'expo-router';
 import {
   darkTheme,
   Fonts,
@@ -26,6 +29,7 @@ import { useMovieSearch } from '@/hooks/use-movie-search';
 export default function HomeScreen() {
   const [query, setQuery] = useState('');
   const [focused, setFocused] = useState(false);
+  const inputRef = useRef<TextInput>(null);
   const { movies, loading } = useMovieSearch(query);
   const { isFavorite, toggle } = useFavorites();
   const { dark } = useThemeContext();
@@ -39,14 +43,25 @@ export default function HomeScreen() {
       <SafeAreaView style={styles.safe} edges={['top']}>
         {/* Header */}
         <View style={styles.header}>
-          <ThemedText type="display">Movies</ThemedText>
-          <ThemedText type="small" color={theme.muted}>
-            Search the catalogue — save what you love.
-          </ThemedText>
+          <View style={styles.headerRow}>
+            <View style={{ flex: 1 }}>
+              <ThemedText type="display">Movies</ThemedText>
+              <ThemedText type="small" color={theme.muted}>
+                Search the catalogue — save what you love.
+              </ThemedText>
+            </View>
+            <Pressable
+              onPress={() => router.push('/settings')}
+              style={[styles.gearButton, { backgroundColor: theme.card }]}
+              hitSlop={8}>
+              <Ionicons name="settings-outline" size={22} color={theme.muted} />
+            </Pressable>
+          </View>
         </View>
 
         {/* Search input */}
-        <View
+        <Pressable
+          onPress={() => inputRef.current?.focus()}
           style={[
             styles.inputWrap,
             { backgroundColor: theme.card, borderColor: focused ? accent : theme.line },
@@ -56,6 +71,7 @@ export default function HomeScreen() {
             ⌕
           </ThemedText>
           <TextInput
+            ref={inputRef}
             style={[styles.input, { color: theme.ink, fontFamily: Fonts.bodyRegular }]}
             value={query}
             onChangeText={setQuery}
@@ -68,7 +84,7 @@ export default function HomeScreen() {
             returnKeyType="search"
             clearButtonMode="while-editing"
           />
-        </View>
+        </Pressable>
 
         {/* Empty state */}
         {!hasQuery && (
@@ -142,11 +158,23 @@ const styles = StyleSheet.create({
     paddingTop: ScreenPaddingTop,
     paddingBottom: ScreenPaddingBottom,
   },
-  header: { gap: 4, marginBottom: 20 },
+  header: { marginBottom: 20 },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  gearButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 6,
+  },
   inputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 52,
     borderRadius: 18,
     borderWidth: 1.5,
     paddingHorizontal: 14,
@@ -154,7 +182,7 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   searchIcon: { fontSize: 20 },
-  input: { flex: 1, fontSize: 16, height: '100%' },
+  input: { flex: 1, fontSize: 16, paddingVertical: 14 },
   emptyScroll: { flex: 1 },
   emptyContent: { paddingTop: 24, paddingBottom: 24 },
   emptyCard: {

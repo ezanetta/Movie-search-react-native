@@ -7,10 +7,10 @@ export default function TabsLayout() {
   return (
     <Tabs
       tabBar={props => <FloatingTabBar {...props} />}
-      screenOptions={{ headerShown: false }}>
+      screenOptions={{ headerShown: false, lazy: false }}>
       <Tabs.Screen name="index" />
       <Tabs.Screen name="favs" />
-      <Tabs.Screen name="settings" />
+      <Tabs.Screen name="settings" options={{ href: null }} />
     </Tabs>
   );
 }

@@ -1,6 +1,7 @@
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback } from 'react';
-import { FlatList, ScrollView, StyleSheet, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { FavCard } from '@/components/FavCard';
@@ -36,10 +37,20 @@ export default function FavsScreen() {
     <View style={[styles.root, { backgroundColor: theme.paper }]}>
       <SafeAreaView style={styles.safe} edges={['top']}>
         <View style={styles.header}>
-          <ThemedText type="display">Favourites</ThemedText>
-          <ThemedText type="small" color={theme.muted}>
-            Your personal watchlist.
-          </ThemedText>
+          <View style={styles.headerRow}>
+            <View style={{ flex: 1 }}>
+              <ThemedText type="display">Favourites</ThemedText>
+              <ThemedText type="small" color={theme.muted}>
+                Your personal watchlist.
+              </ThemedText>
+            </View>
+            <Pressable
+              onPress={() => router.push('/settings')}
+              style={[styles.gearButton, { backgroundColor: theme.card }]}
+              hitSlop={8}>
+              <Ionicons name="settings-outline" size={22} color={theme.muted} />
+            </Pressable>
+          </View>
         </View>
 
         {isEmpty ? (
@@ -95,7 +106,20 @@ const styles = StyleSheet.create({
     paddingTop: ScreenPaddingTop,
     paddingBottom: ScreenPaddingBottom,
   },
-  header: { gap: 4, marginBottom: 20 },
+  header: { marginBottom: 20 },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  gearButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 6,
+  },
   emptyScroll: { flex: 1 },
   emptyContent: { paddingTop: 24, paddingBottom: 24 },
   emptyCard: {

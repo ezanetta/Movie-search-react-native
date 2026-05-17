@@ -11,13 +11,11 @@ import { useFavorites } from '@/hooks/use-favorites';
 const ICONS: Record<string, { active: string; inactive: string }> = {
   index: { active: '⌂', inactive: '⌂' },
   favs: { active: '♥', inactive: '♡' },
-  settings: { active: '⚙', inactive: '⚙' },
 };
 
 const LABELS: Record<string, string> = {
   index: 'Home',
   favs: 'Favorites',
-  settings: 'Settings',
 };
 
 export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
@@ -26,6 +24,10 @@ export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   const { favorites } = useFavorites();
   const hasFavs = favorites.length > 0;
+
+  // Hide entirely when settings is the active screen
+  const activeRouteName = state.routes[state.index]?.name;
+  if (activeRouteName === 'settings') return null;
 
   const blurTint = dark ? 'dark' : 'light';
   const pillBg = dark ? 'rgba(40,40,40,0.92)' : 'rgba(255,255,255,0.94)';
@@ -42,6 +44,7 @@ export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
         )}
 
         {state.routes.map((route, index) => {
+          if (!ICONS[route.name]) return null;
           const isFocused = state.index === index;
           const icons = ICONS[route.name] ?? { active: '●', inactive: '○' };
           const label = LABELS[route.name] ?? route.name;

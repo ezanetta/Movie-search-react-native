@@ -38,7 +38,6 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.displayExtraBold,
     fontSize: 56,
     letterSpacing: -2,
-    lineHeight: 56 * 0.95,
   },
   title: {
     fontFamily: Fonts.displayBold,
