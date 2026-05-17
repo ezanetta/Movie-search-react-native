@@ -1,52 +1,202 @@
 import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import {
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { MovieGrid } from '@/components/MovieGrid';
-import { SearchInput } from '@/components/SearchInput';
+import { PosterCard } from '@/components/PosterCard';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { BottomTabInset, Spacing } from '@/constants/theme';
+import {
+  darkTheme,
+  Fonts,
+  lightTheme,
+  ScreenPaddingBottom,
+  ScreenPaddingH,
+  ScreenPaddingTop,
+} from '@/constants/theme';
+import { useAccent, useTheme as useThemeContext } from '@/context/ThemeContext';
+import { FavMovie } from '@/domain/movie';
 import { useFavorites } from '@/hooks/use-favorites';
 import { useMovieSearch } from '@/hooks/use-movie-search';
 
 export default function HomeScreen() {
   const [query, setQuery] = useState('');
-  const { movies, loading, error } = useMovieSearch(query);
+  const [focused, setFocused] = useState(false);
+  const { movies, loading } = useMovieSearch(query);
   const { isFavorite, toggle } = useFavorites();
+  const { dark } = useThemeContext();
+  const accent = useAccent();
+  const theme = dark ? darkTheme : lightTheme;
+
+  const hasQuery = query.trim().length > 0;
 
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-        <ThemedText type="title" style={styles.heading}>
-          Movies
-        </ThemedText>
-        <SearchInput value={query} onChangeText={setQuery} />
-        <MovieGrid
-          movies={movies}
-          loading={loading}
-          error={error}
-          isFavorite={isFavorite}
-          onToggleFavorite={toggle}
-          emptyMessage={query.trim() ? 'No results found.' : 'Search for a movie above.'}
-        />
+    <View style={[styles.root, { backgroundColor: theme.paper }]}>
+      <SafeAreaView style={styles.safe} edges={['top']}>
+        {/* Header */}
+        <View style={styles.header}>
+          <ThemedText type="display">Movies</ThemedText>
+          <ThemedText type="small" color={theme.muted}>
+            Search the catalogue — save what you love.
+          </ThemedText>
+        </View>
+
+        {/* Search input */}
+        <View
+          style={[
+            styles.inputWrap,
+            { backgroundColor: theme.card, borderColor: focused ? accent : theme.line },
+            focused && { shadowColor: accent, shadowOpacity: 0.22, shadowRadius: 8, shadowOffset: { width: 0, height: 0 }, elevation: 4 },
+          ]}>
+          <ThemedText style={styles.searchIcon} color={focused ? accent : theme.muted}>
+            ⌕
+          </ThemedText>
+          <TextInput
+            style={[styles.input, { color: theme.ink, fontFamily: Fonts.bodyRegular }]}
+            value={query}
+            onChangeText={setQuery}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            placeholder="Try scary, romance, midnight…"
+            placeholderTextColor={theme.muted}
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="search"
+            clearButtonMode="while-editing"
+          />
+        </View>
+
+        {/* Empty state */}
+        {!hasQuery && (
+          <ScrollView
+            style={styles.emptyScroll}
+            contentContainerStyle={styles.emptyContent}
+            showsVerticalScrollIndicator={false}>
+            <View style={[styles.emptyCard, { backgroundColor: theme.card, borderColor: theme.line }]}>
+              {/* Decorative orbs */}
+              <View style={[styles.orbTopRight, { backgroundColor: accent + '22' }]} />
+              <View style={[styles.orbBottomLeft, { backgroundColor: accent + '22' }]} />
+
+              {/* Icon chip */}
+              <View style={[styles.iconChip, { backgroundColor: accent + '22' }]}>
+                <ThemedText style={{ color: accent, fontSize: 22 }}>⌕</ThemedText>
+              </View>
+
+              <ThemedText
+                type="subtitle"
+                style={{ fontFamily: Fonts.displayBold, textAlign: 'center' }}>
+                Find your next favorite
+              </ThemedText>
+              <ThemedText type="small" color={theme.muted} style={styles.emptyBody}>
+                Start typing a title, genre or year above.{'\n'}
+                Tap the ★ to save it for later.
+              </ThemedText>
+            </View>
+          </ScrollView>
+        )}
+
+        {/* Results */}
+        {hasQuery && (
+          <>
+            {!loading && movies.length > 0 && (
+              <View style={styles.resultsHeader}>
+                <ThemedText type="label" style={{ fontSize: 13 }}>
+                  {movies.length} result{movies.length !== 1 ? 's' : ''}
+                </ThemedText>
+                <ThemedText type="small" color={theme.muted}>
+                  for "{query}"
+                </ThemedText>
+              </View>
+            )}
+
+            <FlatList
+              data={movies}
+              keyExtractor={item => item.imdbID}
+              numColumns={2}
+              contentContainerStyle={styles.grid}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item }) => (
+                <PosterCard
+                  movie={item}
+                  isFavorite={isFavorite(item.imdbID)}
+                  onToggleFavorite={(m: FavMovie) => toggle(m)}
+                />
+              )}
+            />
+          </>
+        )}
       </SafeAreaView>
-    </ThemedView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  root: { flex: 1 },
+  safe: {
     flex: 1,
+    paddingHorizontal: ScreenPaddingH,
+    paddingTop: ScreenPaddingTop,
+    paddingBottom: ScreenPaddingBottom,
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.three,
-    paddingTop: Spacing.three,
-    paddingBottom: BottomTabInset,
-    gap: Spacing.three,
+  header: { gap: 4, marginBottom: 20 },
+  inputWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 52,
+    borderRadius: 18,
+    borderWidth: 1.5,
+    paddingHorizontal: 14,
+    gap: 8,
+    marginBottom: 14,
   },
-  heading: {
-    paddingHorizontal: Spacing.one,
+  searchIcon: { fontSize: 20 },
+  input: { flex: 1, fontSize: 16, height: '100%' },
+  emptyScroll: { flex: 1 },
+  emptyContent: { paddingTop: 24, paddingBottom: 24 },
+  emptyCard: {
+    borderRadius: 22,
+    borderWidth: 1.5,
+    borderStyle: 'dashed',
+    padding: 32,
+    alignItems: 'center',
+    gap: 14,
+    overflow: 'hidden',
   },
+  orbTopRight: {
+    position: 'absolute',
+    top: -30,
+    right: -30,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+  },
+  orbBottomLeft: {
+    position: 'absolute',
+    bottom: -30,
+    left: -30,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+  },
+  iconChip: {
+    width: 64,
+    height: 64,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    transform: [{ rotate: '-8deg' }],
+  },
+  emptyBody: { textAlign: 'center', lineHeight: 22 },
+  resultsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+    paddingHorizontal: 7,
+  },
+  grid: { paddingBottom: 24 },
 });
