@@ -15,7 +15,7 @@ const ICONS: Record<string, { active: string; inactive: string }> = {
 
 const LABELS: Record<string, string> = {
   index: 'Home',
-  favs: 'Favorites',
+  favs: 'Favs',
 };
 
 export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {

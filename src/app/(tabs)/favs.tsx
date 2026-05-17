@@ -39,7 +39,7 @@ export default function FavsScreen() {
         <View style={styles.header}>
           <View style={styles.headerRow}>
             <View style={{ flex: 1 }}>
-              <ThemedText type="display">Favourites</ThemedText>
+              <ThemedText type="display">Favs</ThemedText>
               <ThemedText type="small" color={theme.muted}>
                 Your personal watchlist.
               </ThemedText>

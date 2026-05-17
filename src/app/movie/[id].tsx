@@ -164,7 +164,7 @@ export default function MovieDetailScreen() {
           {/* Rating block */}
           {movie.imdbRating !== 'N/A' && (
             <View style={[styles.ratingBlock, { backgroundColor: theme.card, borderColor: theme.line }, !dark && cardShadow]}>
-              <ThemedText style={{ fontFamily: Fonts.displayBold, fontSize: 36, color: accent }}>
+              <ThemedText style={{ fontFamily: Fonts.displayBold, fontSize: 36, lineHeight: 42, color: accent }}>
                 {movie.imdbRating}
               </ThemedText>
               <View style={{ gap: 2 }}>
