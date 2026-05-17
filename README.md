@@ -6,14 +6,21 @@ A cross-platform (iOS / Android) movie search app built with Expo and the [OMDB 
 
 
 
+
+
+
+
+
+
 ## Screenshots
 
 | Home - Empty state | Home results | Favs |
 |:---:|:---:|:---:|
-| <img width="300"  alt="Home - Light - Empty state" src="https://github.com/user-attachments/assets/07bcf1d0-ad51-4fa2-81fb-e0d9b597c8ea" /> | <img width="300"  alt="Home - Light - Movies" src="https://github.com/user-attachments/assets/df23ec39-6809-4a89-bc11-99a1efda4965" /> | <img width="300"  alt="Favs - Light" src="https://github.com/user-attachments/assets/b2a19361-0d19-4b70-8f41-0368c6890f3c" /> |
+| <img width="300"  alt="Home - Light - Empty state" src="https://github.com/user-attachments/assets/07bcf1d0-ad51-4fa2-81fb-e0d9b597c8ea" /> | <img width="300"  alt="Home - Light - Movies" src="https://github.com/user-attachments/assets/df23ec39-6809-4a89-bc11-99a1efda4965" /> | <img width="300" alt="Favs - Light" src="https://github.com/user-attachments/assets/8603ac03-bb0d-4e39-b666-57e5c796c565" /> |
 | Home | Favs | Settings|
-| <img width="300"  alt="Home - Dark" src="https://github.com/user-attachments/assets/7fd9c0b3-b6c3-4da6-861d-7d3f02881ba9" /> | <img width="300"  alt="Favs- Dark" src="https://github.com/user-attachments/assets/ca47f264-05cd-433b-9bfd-d5d07a34d1c7" /> | <img width="300"  alt="Settings" src="https://github.com/user-attachments/assets/c01d8eff-69f8-46e5-be91-175724808f7e" /> |
-| | | |
+| <img width="300"  alt="Home - Dark" src="https://github.com/user-attachments/assets/7fd9c0b3-b6c3-4da6-861d-7d3f02881ba9" /> | <img width="300"  alt="Favs - Dark" src="https://github.com/user-attachments/assets/3b89d7ab-a939-4be6-8517-536861dde686" /> | <img width="300"  alt="Settings" src="https://github.com/user-attachments/assets/c01d8eff-69f8-46e5-be91-175724808f7e" /> |
+| Details - Light | Details - Dark | Settings - Light |
+| <img width="300"  alt="Details - Light" src="https://github.com/user-attachments/assets/082399b1-0bc6-45f1-86bc-8a93fac9bab7" /> | <img width="300"  alt="Details - Dark" src="https://github.com/user-attachments/assets/da783e48-c41f-41e8-ab56-771a74d52e16" /> | <img width="300"  alt="Settings" src="https://github.com/user-attachments/assets/388023fb-fd21-482d-ac41-376a38d49244" /> | 
 
 ---
 
