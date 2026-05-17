@@ -1,5 +1,3 @@
-import '@/global.css';
-
 // ─── Color themes ────────────────────────────────────────────────────────────
 
 export const lightTheme = {
